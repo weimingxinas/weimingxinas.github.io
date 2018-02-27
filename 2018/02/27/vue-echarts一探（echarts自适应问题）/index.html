@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="要开学了。。。过了个年，感觉又佛系了不少   背景：最近在做一个项目，用到vue和echart。然后就遇到了个问题，echart自适应的问题，我的项目中是有侧边栏的，当侧边栏收起的时候，echart实例已经生成，不会跟随父容器的宽度改变。页面布局如下：（md粗糙的表示一下）     header header     侧边栏 内容滚动区域    首先百度google，网上大部分是针对window窗">
+<meta property="og:type" content="article">
+<meta property="og:title" content="vue+echarts一探（echarts自适应问题）">
+<meta property="og:url" content="http://blog.wmxfe.com/2018/02/27/vue-echarts一探（echarts自适应问题）/index.html">
+<meta property="og:site_name" content="无敌的个人博客">
+<meta property="og:description" content="要开学了。。。过了个年，感觉又佛系了不少   背景：最近在做一个项目，用到vue和echart。然后就遇到了个问题，echart自适应的问题，我的项目中是有侧边栏的，当侧边栏收起的时候，echart实例已经生成，不会跟随父容器的宽度改变。页面布局如下：（md粗糙的表示一下）     header header     侧边栏 内容滚动区域    首先百度google，网上大部分是针对window窗">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-02-27T15:01:38.889Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="vue+echarts一探（echarts自适应问题）">
+<meta name="twitter:description" content="要开学了。。。过了个年，感觉又佛系了不少   背景：最近在做一个项目，用到vue和echart。然后就遇到了个问题，echart自适应的问题，我的项目中是有侧边栏的，当侧边栏收起的时候，echart实例已经生成，不会跟随父容器的宽度改变。页面布局如下：（md粗糙的表示一下）     header header     侧边栏 内容滚动区域    首先百度google，网上大部分是针对window窗">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.wmxfe.com/2018/02/27/vue-echarts一探（echarts自适应问题）/"/>
+
+
+
+
+
+  <title>vue+echarts一探（echarts自适应问题） | 无敌的个人博客</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">无敌的个人博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">天道酬勤。</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.wmxfe.com/2018/02/27/vue-echarts一探（echarts自适应问题）/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="wdd">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/upload/111.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="无敌的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">vue+echarts一探（echarts自适应问题）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-27T22:52:37+08:00">
+                2018-02-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/vue/" itemprop="url" rel="index">
+                    <span itemprop="name">vue</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>要开学了。。。过了个年，感觉又佛系了不少  </p>
+<p>背景：最近在做一个项目，用到vue和echart。<br>然后就遇到了个问题，echart自适应的问题，我的项目中是有侧边栏的，当侧边栏收起的时候，echart实例已经生成，不会跟随父容器的宽度改变。<br>页面布局如下：（md粗糙的表示一下） </p>
+<table>
+<thead>
+<tr>
+<th>header</th>
+<th>header</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>侧边栏</td>
+<td>内容滚动区域</td>
+</tr>
+</tbody>
+</table>
+<p>首先百度google，网上大部分是针对window窗口大小的变化而对echart图进行resize。代码如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">window</span>.addEventListener(<span class="string">"resize"</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">    chart.resize();</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>这个是针对window窗口大小变化的。而且也存在问题，咱们下面继续讨论。<br>以上并不符合我的需求。<br>经过我的一番冥思苦想，想到了两种解决方案。因为是刚学ehcart，所以在vue文件中都是比较简单粗暴的给个div，然后直接搞！！！<br><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"chart"</span> &gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"></span></div><div class="line"><span class="javascript">    <span class="comment">// 在mouted里面初始化</span></span></div><div class="line"><span class="javascript">    <span class="keyword">let</span> chart = echarts.init(<span class="built_in">document</span>.getElementById(<span class="string">'chart'</span>));</span></div><div class="line"><span class="javascript">    chart.setOption(<span class="keyword">this</span>.chartData);</span></div><div class="line"><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p>如echarts文档中标准，教科书般的代码！（写完出了图我还沾沾自喜）</p>
+<p>下面说一下我想到的解决方案：  （侧边栏的收缩我弄了个变量showNav存在vuex中）</p>
+<h4 id="在util中弄个函数，在每个Echart的init的下面去调用"><a href="#在util中弄个函数，在每个Echart的init的下面去调用" class="headerlink" title="在util中弄个函数，在每个Echart的init的下面去调用"></a>在util中弄个函数，在每个Echart的init的下面去调用</h4><p>   util函数传入当前echart实例和vm实例。传入vm实例的目的是想利用watch去监听vuex中的showNav，从而调用chart.resize()对echart图进行重绘。<br>   代码如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> chartResize = <span class="function">(<span class="params">chart, _this</span>) =&gt;</span> &#123;</div><div class="line">	<span class="keyword">if</span>(chart &amp;&amp; _this) &#123;</div><div class="line">		<span class="built_in">window</span>.addEventListener(<span class="string">"resize"</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">			chart.resize();</div><div class="line">		&#125;);</div><div class="line">		_this.$watch(<span class="string">"_this.$store.getters['SHOW_NAV']"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">val</span>)</span>&#123;</div><div class="line">			chart.resize();</div><div class="line">		&#125;)</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="将echart写在chart-vue中，在chart-vue中init并将自适应部分写在该组件中，每处需要echart图的时候使用该组件。"><a href="#将echart写在chart-vue中，在chart-vue中init并将自适应部分写在该组件中，每处需要echart图的时候使用该组件。" class="headerlink" title="将echart写在chart.vue中，在chart.vue中init并将自适应部分写在该组件中，每处需要echart图的时候使用该组件。"></a>将echart写在chart.vue中，在chart.vue中init并将自适应部分写在该组件中，每处需要echart图的时候使用该组件。</h4><p>（这个其实我感觉是比较合理比较正确的，在chart.vue中去初始化，不应该在每处需要echart都初始化一次，同时对自适应能做到统一处理）。<br>那么这部分的做法是在chart.vue中监听vuex中的showNav从而调用chart.resize()<br>代码如下：(只截取了一部分)</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">template</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">:id</span>=<span class="string">"id"</span> &gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">template</span>&gt;</span></div><div class="line"></div><div class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"></span></div><div class="line"><span class="javascript"><span class="keyword">import</span> &#123; mapGetters &#125; <span class="keyword">from</span> <span class="string">'vuex'</span>;</span></div><div class="line"><span class="javascript"><span class="keyword">import</span> util <span class="keyword">from</span> <span class="string">'../util/util'</span>;</span></div><div class="line"><span class="javascript"><span class="keyword">import</span> echarts <span class="keyword">from</span> <span class="string">'echarts'</span>;</span></div><div class="line"><span class="undefined"></span></div><div class="line"><span class="javascript"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span></div><div class="line"><span class="javascript">    name: <span class="string">'chart'</span>,</span></div><div class="line"><span class="javascript">    props: [<span class="string">'id'</span>, <span class="string">'option'</span>, <span class="string">'heightClass'</span>, <span class="string">'group'</span>],</span></div><div class="line"><span class="undefined">    computed: &#123;</span></div><div class="line"><span class="undefined">        ...mapGetters(&#123;</span></div><div class="line"><span class="javascript">            showNav: <span class="string">'GET_SHOW_NAV'</span></span></div><div class="line"><span class="undefined">        &#125;)</span></div><div class="line"><span class="undefined">    &#125;,</span></div><div class="line"><span class="undefined">    watch: &#123;</span></div><div class="line"><span class="javascript">        showNav: <span class="function"><span class="keyword">function</span>(<span class="params">val</span>) </span>&#123;</span></div><div class="line"><span class="javascript">            setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span></div><div class="line"><span class="javascript">                <span class="keyword">this</span>.chart.resize();</span></div><div class="line"><span class="undefined">            &#125;, 0);</span></div><div class="line"><span class="undefined">        &#125;,</span></div><div class="line"><span class="javascript">        option: <span class="function"><span class="keyword">function</span>(<span class="params">val</span>) </span>&#123;</span></div><div class="line"><span class="javascript">            <span class="keyword">this</span>.chart.setOption(<span class="keyword">this</span>.option, <span class="literal">true</span>);</span></div><div class="line"><span class="undefined">        &#125;,</span></div><div class="line"><span class="javascript">        group: <span class="function"><span class="keyword">function</span>(<span class="params">group</span>) </span>&#123;</span></div><div class="line"><span class="javascript">            <span class="keyword">this</span>.chart.group = group;</span></div><div class="line"><span class="undefined">        &#125;</span></div><div class="line"><span class="undefined">    &#125;,</span></div><div class="line"><span class="undefined">    methods: &#123;</span></div><div class="line"><span class="undefined">        init() &#123;</span></div><div class="line"><span class="javascript">            <span class="keyword">let</span> chart = echarts.init(<span class="built_in">document</span>.getElementById(<span class="keyword">this</span>.id));</span></div><div class="line"><span class="javascript">            <span class="keyword">this</span>.chart = chart;</span></div><div class="line"><span class="javascript">            <span class="keyword">if</span> (<span class="keyword">this</span>.group) &#123;</span></div><div class="line"><span class="javascript">                <span class="keyword">this</span>.chart.group = <span class="keyword">this</span>.group;</span></div><div class="line"><span class="undefined">            &#125;</span></div><div class="line"><span class="javascript">            setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span></div><div class="line"><span class="javascript">                chart.setOption(<span class="keyword">this</span>.option, <span class="literal">true</span>);</span></div><div class="line"><span class="undefined">            &#125;, 0);</span></div><div class="line"><span class="undefined">            util.chartResResize(chart);</span></div><div class="line"><span class="undefined">            &#125;);</span></div><div class="line"><span class="undefined">        &#125;</span></div><div class="line"><span class="undefined">    &#125;,</span></div><div class="line"><span class="undefined">    mounted() &#123;</span></div><div class="line"><span class="javascript">        <span class="keyword">if</span> (<span class="keyword">this</span>.option) &#123;</span></div><div class="line"><span class="javascript">            <span class="keyword">this</span>.init();</span></div><div class="line"><span class="undefined">        &#125;</span></div><div class="line"><span class="undefined">    &#125;</span></div><div class="line"><span class="undefined">&#125;;</span></div><div class="line"><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>后面翻看了<a href="https://github.com/ecomfe/vue-echarts/blob/master/src/components/ECharts.vue" target="_blank" rel="external">vue-echarts</a>中的代码，思路也是一致，封装起来后传入option。同时，它的组件Echarts.vue写得挺优秀的，值得学习。我观察到该组件有个prop为auto-resize，于是看了下对resize的处理，与网络上搜索的大致相同。但是有一点细节它处理的比较好，show the code：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (<span class="keyword">this</span>.autoResize) &#123;</div><div class="line">    <span class="keyword">this</span>.__resizeHandler = debounce(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">      chart.resize()</div><div class="line">    &#125;, <span class="number">100</span>, &#123; <span class="attr">leading</span>: <span class="literal">true</span> &#125;)</div><div class="line">    addListener(<span class="keyword">this</span>.$el, <span class="keyword">this</span>.__resizeHandler)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>此处加上了节流（用了lodash的debounce）<br>读者们是否也注意到了呢？window的resize事件我们一般要加上节流函数，防止频繁触发。</p>
+<p>以上大致的echarts自适应的一些小小心得。接下来会勤奋一点写博客。总感觉总结和心得的东西一直都有，也有记录在有道云，但是想拿上来发篇博客就感觉不够格。</p>
+<p>补充：我想到了第三种方法，接下来会再写一篇，监听父容器的resize事件。看看最后能不能写成vue的plugin的形式分享出来</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束&nbsp;&nbsp;感谢您的阅读-------------</div>
+    
+</div>
+      </div>
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/11/15/javascript中防抖和节流函数/" rel="next" title="javascript中防抖和节流函数">
+                <i class="fa fa-chevron-left"></i> javascript中防抖和节流函数
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/upload/111.jpg"
+                alt="wdd" />
+            
+              <p class="site-author-name" itemprop="name">wdd</p>
+              <p class="site-description motion-element" itemprop="description">前端开发</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#在util中弄个函数，在每个Echart的init的下面去调用"><span class="nav-number">1.</span> <span class="nav-text">在util中弄个函数，在每个Echart的init的下面去调用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#将echart写在chart-vue中，在chart-vue中init并将自适应部分写在该组件中，每处需要echart图的时候使用该组件。"><span class="nav-number">2.</span> <span class="nav-text">将echart写在chart.vue中，在chart.vue中init并将自适应部分写在该组件中，每处需要echart图的时候使用该组件。</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wdd</span>
+
+  
+</div>
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
+    本站总访问量<span id="busuanzi_value_site_pv"></span>次
+</span>
+</div>
+<!--
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+-->
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">感谢一路的陪伴的人</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

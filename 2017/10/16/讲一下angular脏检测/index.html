@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="脏检测的简单实现angular的脏检测应该是众所周知了，看一下下面这个图，社区某个页面scope绑定的值。我们通过以下代码就可以访问到作用域中绑定的值。 1angular.element(&amp;apos;.content&amp;apos;).scope()  假设你在一个ng-click指令对应的handler函数中更改了scope中的一条数据，此时AngularJS会自动地通过调用$digest()来触发">
+<meta property="og:type" content="article">
+<meta property="og:title" content="讲一下angular脏检测">
+<meta property="og:url" content="http://blog.wmxfe.com/2017/10/16/讲一下angular脏检测/index.html">
+<meta property="og:site_name" content="无敌的个人博客">
+<meta property="og:description" content="脏检测的简单实现angular的脏检测应该是众所周知了，看一下下面这个图，社区某个页面scope绑定的值。我们通过以下代码就可以访问到作用域中绑定的值。 1angular.element(&amp;apos;.content&amp;apos;).scope()  假设你在一个ng-click指令对应的handler函数中更改了scope中的一条数据，此时AngularJS会自动地通过调用$digest()来触发">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.wmxfe.com/upload/ngWatchers.jpg">
+<meta property="og:updated_time" content="2017-11-12T14:38:11.183Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="讲一下angular脏检测">
+<meta name="twitter:description" content="脏检测的简单实现angular的脏检测应该是众所周知了，看一下下面这个图，社区某个页面scope绑定的值。我们通过以下代码就可以访问到作用域中绑定的值。 1angular.element(&amp;apos;.content&amp;apos;).scope()  假设你在一个ng-click指令对应的handler函数中更改了scope中的一条数据，此时AngularJS会自动地通过调用$digest()来触发">
+<meta name="twitter:image" content="http://blog.wmxfe.com/upload/ngWatchers.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.wmxfe.com/2017/10/16/讲一下angular脏检测/"/>
+
+
+
+
+
+  <title>讲一下angular脏检测 | 无敌的个人博客</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">无敌的个人博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">天道酬勤。</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.wmxfe.com/2017/10/16/讲一下angular脏检测/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="wdd">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/upload/111.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="无敌的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">讲一下angular脏检测</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-16T22:48:26+08:00">
+                2017-10-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/angular/" itemprop="url" rel="index">
+                    <span itemprop="name">angular</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="脏检测的简单实现"><a href="#脏检测的简单实现" class="headerlink" title="脏检测的简单实现"></a>脏检测的简单实现</h2><p>angular的脏检测应该是众所周知了，看一下下面这个图，社区某个页面scope绑定的值。我们通过以下代码就可以访问到作用域中绑定的值。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">angular.element(&apos;.content&apos;).scope()</div></pre></td></tr></table></figure>
+<p><img src="../../../../upload/ngWatchers.jpg" alt="image"></p>
+<p>假设你在一个ng-click指令对应的handler函数中更改了scope中的一条数据，此时AngularJS会自动地通过调用$digest()来触发一轮$digest循环。</p>
+<p>ng只有在指定事件触发后，才进入$digest cycle：</p>
+<ul>
+<li>DOM事件，譬如用户输入文本，点击按钮等。(ng-click)</li>
+<li>XHR响应事件 ($http)</li>
+<li>浏览器Location变更事件 ($location)</li>
+<li>Timer事件($timeout, $interval)</li>
+<li>执行$digest()或$apply()</li>
+</ul>
+<p>在$digest流程中，Angular将遍历每个数据变量的watcher，比较它的新旧值。当新旧值不同时，触发listener函数，执行相关的操作。</p>
+<p><strong>需要注意的是</strong>，$digest循环不会只运行一次。在当前的一次循环结束后，它会再执行一次循环用来检查是否有models发生了变化。它用来处理在listener函数被执行时可能引起的model变化。因此，$digest循环会持续运行直到model不再发生变化，或者$digest循环的次数达到了10次（好像是叫做TTL）因此，尽可能地不要在listener函数中修改model。</p>
+<p>下面是简单双向绑定的实现：</p>
+<p>（为了方便理解，我把改变视图的函数写在$digest中，实际上应该分开写）</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">scope</span></span>&#123;</div><div class="line">        <span class="keyword">constructor</span>()&#123;</div><div class="line">            <span class="keyword">this</span>.$$watcher=[];                          <span class="comment">//监听器</span></div><div class="line">        &#125;</div><div class="line">        $watch(name,exp,listener)&#123;</div><div class="line">            <span class="keyword">this</span>.$$watcher.push(&#123;</div><div class="line">                name:name,                              <span class="comment">//数据变量名</span></div><div class="line">                last:<span class="string">''</span>,                                <span class="comment">//数据变量旧值</span></div><div class="line">                newVal:exp,                             <span class="comment">//返回数据变量新值的函数</span></div><div class="line">                listener:listener || <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;&#125;       <span class="comment">//监听回调函数</span></div><div class="line">            &#125;)</div><div class="line">        &#125;</div><div class="line">        $digest()&#123;</div><div class="line">            <span class="keyword">let</span> bindList=<span class="built_in">document</span>.querySelectorAll(<span class="string">'[ng-bind]'</span>);</div><div class="line">            <span class="keyword">let</span> dirty= <span class="literal">true</span>;</div><div class="line">            <span class="keyword">while</span>(dirty)&#123;</div><div class="line">                dirty=<span class="literal">false</span>;</div><div class="line">                <span class="keyword">for</span>(<span class="keyword">let</span> i=<span class="number">0</span>;i&lt;<span class="keyword">this</span>.$$watcher.length;i++)&#123;</div><div class="line">                    <span class="keyword">let</span> newVal=<span class="keyword">this</span>.$$watcher[i].newVal();</div><div class="line">                    <span class="keyword">let</span> oldVal=<span class="keyword">this</span>.$$watcher[i].last;</div><div class="line">                    <span class="keyword">if</span>(newVal!==oldVal &amp;&amp; !<span class="built_in">isNaN</span>(newVal) &amp;&amp; !<span class="built_in">isNaN</span>(oldVal))&#123;</div><div class="line">                        dirty=<span class="literal">true</span>;<span class="comment">//遍历两次，确保model不再变化</span></div><div class="line">                        <span class="keyword">this</span>.$$watcher[i].listener(newVal,oldVal);<span class="comment">//执行监听函数</span></div><div class="line">                        <span class="keyword">this</span>.$$watcher[i].last=newVal;</div><div class="line">                        <span class="comment">//下面这一段是改变view</span></div><div class="line">                        <span class="keyword">for</span> (<span class="keyword">let</span> j = <span class="number">0</span>; j &lt; bindList.length; j++) &#123;</div><div class="line">                            <span class="keyword">let</span> modelName=bindList[j].getAttribute(<span class="string">"ng-bind"</span>);</div><div class="line">                            <span class="keyword">if</span>(modelName==<span class="keyword">this</span>.$$watcher[i].name) &#123;</div><div class="line">                                <span class="keyword">if</span> (bindList[j].tagName == <span class="string">"INPUT"</span>) &#123;</div><div class="line">                                    bindList[j].value = <span class="keyword">this</span>.$$watcher[i].newVal();</div><div class="line">                                &#125;</div><div class="line">                                <span class="keyword">else</span> &#123;</div><div class="line">                                    bindList[j].innerHTML = <span class="keyword">this</span>.$$watcher[i].newVal()</div><div class="line">                                &#125;</div><div class="line">                            &#125;</div><div class="line">                        &#125;</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p><em>以上是对$watch和$digset的简单实现，并没有考虑数组和对象</em></p>
+<p>下面这一部分做了三件事</p>
+<ol>
+<li>将scope绑定的值添加到$$watcher中</li>
+<li>监听ng-click和input事件，触发$digest()</li>
+<li>默认执行一次$digest<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">window</span>.addEventListener(<span class="string">'onload'</span>,<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">    <span class="keyword">let</span> $scope=<span class="keyword">new</span> scope();</div><div class="line">    $scope.count=<span class="number">0</span>;</div><div class="line">    $scope.wmx=<span class="number">123</span>;</div><div class="line">    $scope.increment=<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;<span class="keyword">this</span>.count++&#125;;</div><div class="line">    </div><div class="line">    <span class="comment">//监听ng-click事件，触发$digest循环（使用es6的let）</span></div><div class="line">    <span class="keyword">let</span> bindList=<span class="built_in">document</span>.querySelectorAll(<span class="string">'[ng-click]'</span>);</div><div class="line">    <span class="keyword">for</span>(<span class="keyword">let</span> i=<span class="number">0</span>;i&lt;bindList.length;i++)&#123;</div><div class="line">        bindList[i].onclick=<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">            $scope[bindList[i].getAttribute(<span class="string">"ng-click"</span>)]();</div><div class="line">            $scope.$digest(); </div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="comment">//监听input事件，触发$digest循环（使用闭包）</span></div><div class="line">    <span class="keyword">let</span> inputList=<span class="built_in">document</span>.querySelectorAll(<span class="string">"input[ng-bind]"</span>);         </div><div class="line">    <span class="keyword">for</span>(<span class="keyword">var</span> i=<span class="number">0</span>;i&lt;inputList.length;i++)&#123;</div><div class="line">        inputList[i].addEventListener(<span class="string">"input"</span>,(<span class="function"><span class="keyword">function</span>(<span class="params">index</span>)</span>&#123;</div><div class="line">            <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">                $scope[inputList[index].getAttribute(<span class="string">"ng-bind"</span>)]=inputList[index].value;</div><div class="line">                $scope.$digest();</div><div class="line">            &#125;</div><div class="line">        &#125;)(i));</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="comment">//以下这段是将scope绑定的值添加到$$watchers</span></div><div class="line">    <span class="comment">//newVal必需设置为函数。如果是数据变量，那么它的新值将一直等于创建监听器时绑定的</span></div><div class="line">    <span class="comment">//值，而实际上数据的值是在不断变化的。使用函数便能在每次调用时返回它的最新值。</span></div><div class="line">    <span class="keyword">for</span>(<span class="keyword">let</span> key <span class="keyword">in</span> $scope)&#123;</div><div class="line">        <span class="keyword">if</span>(key!=<span class="string">"$$watcher"</span> &amp;&amp; <span class="keyword">typeof</span> $scope[key]!=<span class="string">"function"</span>) &#123; </div><div class="line">            $scope.$watch(key, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">                <span class="keyword">return</span> $scope[key];</div><div class="line">            &#125;)</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="comment">//默认触发一次digest（）</span></div><div class="line">    $scope.$digest();</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>看一下效果：<a href="../../../../upload/dirty.html">链接</a></p>
+<p>有一点很有趣，angular是进入$digest cycle，等待所有model都稳定后，才批量一次性更新UI。<br>这种机制能减少浏览器repaint次数，从而提高性能。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束&nbsp;&nbsp;感谢您的阅读-------------</div>
+    
+</div>
+      </div>
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/10/16/hello-world/" rel="next" title="Hello World">
+                <i class="fa fa-chevron-left"></i> Hello World
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/11/15/javascript中防抖和节流函数/" rel="prev" title="javascript中防抖和节流函数">
+                javascript中防抖和节流函数 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/upload/111.jpg"
+                alt="wdd" />
+            
+              <p class="site-author-name" itemprop="name">wdd</p>
+              <p class="site-description motion-element" itemprop="description">前端开发</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#脏检测的简单实现"><span class="nav-number">1.</span> <span class="nav-text">脏检测的简单实现</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wdd</span>
+
+  
+</div>
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
+    本站总访问量<span id="busuanzi_value_site_pv"></span>次
+</span>
+</div>
+<!--
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+-->
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">感谢一路的陪伴的人</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
