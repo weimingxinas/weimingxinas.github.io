@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="vue components," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="原生单选框的实现：vue单选框的实现：只需要一个v-model即可达到互斥效果，v-model的值是data里面的数据，进行了双向绑定，由此可见并没有通过name属性来达到互斥，那么时怎么实现的呢？首先先来了解下v-model的本质，v-model本质上是语法糖 v-model：对input输入框的input事件进行监听，当键盘敲下时就实时改变searchText的值，同时修改searchText">
+<meta name="keywords" content="vue components">
+<meta property="og:type" content="article">
+<meta property="og:title" content="element-radio">
+<meta property="og:url" content="http://blog.wmxfe.com/2019/07/06/element-radio/index.html">
+<meta property="og:site_name" content="清风明月的博客">
+<meta property="og:description" content="原生单选框的实现：vue单选框的实现：只需要一个v-model即可达到互斥效果，v-model的值是data里面的数据，进行了双向绑定，由此可见并没有通过name属性来达到互斥，那么时怎么实现的呢？首先先来了解下v-model的本质，v-model本质上是语法糖 v-model：对input输入框的input事件进行监听，当键盘敲下时就实时改变searchText的值，同时修改searchText">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-07-06T06:27:01.042Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="element-radio">
+<meta name="twitter:description" content="原生单选框的实现：vue单选框的实现：只需要一个v-model即可达到互斥效果，v-model的值是data里面的数据，进行了双向绑定，由此可见并没有通过name属性来达到互斥，那么时怎么实现的呢？首先先来了解下v-model的本质，v-model本质上是语法糖 v-model：对input输入框的input事件进行监听，当键盘敲下时就实时改变searchText的值，同时修改searchText">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.wmxfe.com/2019/07/06/element-radio/"/>
+
+
+
+
+
+  <title>element-radio | 清风明月的博客</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">清风明月的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">天道酬勤。</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.wmxfe.com/2019/07/06/element-radio/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="wdd">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/upload/111.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="清风明月的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">element-radio</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-06T14:26:36+08:00">
+                2019-07-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="原生单选框的实现："><a href="#原生单选框的实现：" class="headerlink" title="原生单选框的实现："></a>原生单选框的实现：</h4><h4 id="vue单选框的实现："><a href="#vue单选框的实现：" class="headerlink" title="vue单选框的实现："></a>vue单选框的实现：</h4><p>只需要一个v-model即可达到互斥效果，v-model的值是data里面的数据，进行了双向绑定，由此可见并没有通过name属性来达到互斥，那么时怎么实现的呢？首先先来了解下v-model的本质，v-model本质上是语法糖</p>
+<p>v-model：对input输入框的input事件进行监听，当键盘敲下时就实时改变searchText的值，同时修改searchText的值，输入框的value也跟着变化</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">function genRadioModel (</div><div class="line">  el: ASTElement,</div><div class="line">  value: string,</div><div class="line">  modifiers: ?ASTModifiers</div><div class="line">) &#123;</div><div class="line">  const number = modifiers &amp;&amp; modifiers.number</div><div class="line">  let valueBinding = getBindingAttr(el, &apos;value&apos;) || &apos;null&apos;</div><div class="line">  valueBinding = number ? `_n($&#123;valueBinding&#125;)` : valueBinding</div><div class="line">  addProp(el, &apos;checked&apos;, `_q($&#123;value&#125;,$&#123;valueBinding&#125;)`)</div><div class="line">  addHandler(el, &apos;change&apos;, genAssignmentCode(value, valueBinding), null, true)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>addProp这个方法就会把checked属性的值_q(‘Jack’,name)放入属性列表，这里_q是looseEqual方法的简写，表示宽松比较(如果是对象，则通过JSON.stringify转成字符串比较，否则直接String()转换比较)2个值是否相同，这样这里的逻辑就明确了，如果单选框的value的值和v-model的值相同，那么就加上一个checked属性，表示该单选被选中，自然而然其他单选框value的值和v-model的值不同，所以就不是选中状态，没有checked属性，所以达到了互斥效果</p>
+<h4 id="radio组件的要点"><a href="#radio组件的要点" class="headerlink" title="radio组件的要点:"></a>radio组件的要点:</h4><h5 id="1-label放在最外层的作用是扩大鼠标点击范围，无论是点击在文字还是input上都能够触发响应。"><a href="#1-label放在最外层的作用是扩大鼠标点击范围，无论是点击在文字还是input上都能够触发响应。" class="headerlink" title="1. label放在最外层的作用是扩大鼠标点击范围，无论是点击在文字还是input上都能够触发响应。"></a>1. label放在最外层的作用是扩大鼠标点击范围，无论是点击在文字还是input上都能够触发响应。</h5><h5 id="2-隐藏input标签，自己模拟radio"><a href="#2-隐藏input标签，自己模拟radio" class="headerlink" title="2. 隐藏input标签，自己模拟radio"></a>2. 隐藏input标签，自己模拟radio</h5><p> 真正的input透明度为0，且是绝对定位脱离文档流，因此不占空间且我们看不到，注意不是display:none或者visibility:hidden,如果是none或者hidden的话则无法触发鼠标点击了，只有opacity:0</p>
+<h5 id="3-disabled"><a href="#3-disabled" class="headerlink" title="3. disabled"></a>3. disabled</h5><p>功能上的禁用是通过设置input的disabled属性来实现,下面源码中的真正的input的:disabled=”isDisabled”</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">isDisabled() &#123;</div><div class="line">    return this.isGroup</div><div class="line">      ? this._radioGroup.disabled || this.disabled || (this.elForm || &#123;&#125;).disabled</div><div class="line">      : this.disabled || (this.e lForm || &#123;&#125;).disabled;</div><div class="line">  &#125;,</div></pre></td></tr></table></figure>
+<h5 id="4-role-”radio”"><a href="#4-role-”radio”" class="headerlink" title="4.role=”radio”"></a>4.role=”radio”</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">:aria-checked=&quot;model === label&quot;</div><div class="line">:aria-disabled=&quot;isDisabled&quot;</div></pre></td></tr></table></figure>
+<p>复制代码这几句都是用来为不方便的人士提供的功能，比如屏幕阅读器，  role的作用是描述一个非标准的tag的实际作用。<br>比如用div做button，那么设置div 的 role=”button”，辅助工具就可以认出这实际上是个button。<br>aria的意思是Accessible Rich Internet<br>Application，aria-*的作用就是描述这个tag在可视化的情境中的具体信息。</p>
+<h5 id="5-tabindex"><a href="#5-tabindex" class="headerlink" title="5.tabindex"></a>5.tabindex</h5><p>规定了按下tab键该元素获取焦点的顺序，同样是个计算属性</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">tabIndex() &#123;</div><div class="line">    return !this.isDisabled ? (this.isGroup ? (this.model === this.label ? 0 : -1) : 0) : -1;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>如果为禁用状态，tabindex为-1，则无法使用tab键使该元素获取焦点，如果不是禁用状态下，如果该单选按钮是在单选框组组件内且是选中状态则可以通过tab键获取焦点，否则无法通过tab键获取焦点，<br>当 tabindex &gt; 0 的元素都切换之后，才会切换到 tabindex = 0 的元素，并且按出现的先后次序进行切换，这里的逻辑就是tab只能访问到选中状态下的单选按钮</p>
+<h5 id="6-keydown-space-stop-prevent-”model-isDisabled-model-label”"><a href="#6-keydown-space-stop-prevent-”model-isDisabled-model-label”" class="headerlink" title="6.@keydown.space.stop.prevent=”model = isDisabled ? model : label”"></a>6.@keydown.space.stop.prevent=”model = isDisabled ? model : label”</h5><p>用tab切换不同选项时，按空格可以快速选择目标项，方便操作</p>
+<h5 id="7-nextTick"><a href="#7-nextTick" class="headerlink" title="7.$nextTick"></a>7.$nextTick</h5><blockquote>
+<p>$nextTick的作用是将回调延迟到下次DOM 更新循环之后执行</p>
+<h5 id="8-slot"><a href="#8-slot" class="headerlink" title="8.slot"></a>8.slot</h5></blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&lt;slot&gt;&lt;/slot&gt;</div><div class="line">&lt;template v-if=&quot;!$slots.default&quot;&gt;&#123;&#123;label&#125;&#125;&lt;/template&gt;</div></pre></td></tr></table></figure>
+<p>可以直接写成</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;slot&gt;&#123;&#123;label&#125;&#125;&lt;/slot&gt;</div></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束&nbsp;&nbsp;感谢您的阅读-------------</div>
+    
+</div>
+      </div>
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/vue-components/" rel="tag"># vue components</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/07/06/docker/" rel="next" title="docker">
+                <i class="fa fa-chevron-left"></i> docker
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/07/06/element-input组件/" rel="prev" title="element-input">
+                element-input <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/upload/111.jpg"
+                alt="wdd" />
+            
+              <p class="site-author-name" itemprop="name">wdd</p>
+              <p class="site-description motion-element" itemprop="description">前端开发</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#原生单选框的实现："><span class="nav-number">1.</span> <span class="nav-text">原生单选框的实现：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#vue单选框的实现："><span class="nav-number">2.</span> <span class="nav-text">vue单选框的实现：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#radio组件的要点"><span class="nav-number">3.</span> <span class="nav-text">radio组件的要点:</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-label放在最外层的作用是扩大鼠标点击范围，无论是点击在文字还是input上都能够触发响应。"><span class="nav-number">3.1.</span> <span class="nav-text">1. label放在最外层的作用是扩大鼠标点击范围，无论是点击在文字还是input上都能够触发响应。</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-隐藏input标签，自己模拟radio"><span class="nav-number">3.2.</span> <span class="nav-text">2. 隐藏input标签，自己模拟radio</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-disabled"><span class="nav-number">3.3.</span> <span class="nav-text">3. disabled</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-role-”radio”"><span class="nav-number">3.4.</span> <span class="nav-text">4.role=”radio”</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#5-tabindex"><span class="nav-number">3.5.</span> <span class="nav-text">5.tabindex</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#6-keydown-space-stop-prevent-”model-isDisabled-model-label”"><span class="nav-number">3.6.</span> <span class="nav-text">6.@keydown.space.stop.prevent=”model = isDisabled ? model : label”</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#7-nextTick"><span class="nav-number">3.7.</span> <span class="nav-text">7.$nextTick</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#8-slot"><span class="nav-number">3.8.</span> <span class="nav-text">8.slot</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">wdd</span>
+
+  
+</div>
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_pv">
+    本站总访问量<span id="busuanzi_value_site_pv"></span>次
+</span>
+</div>
+<!--
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+-->
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">感谢一路的陪伴的人</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

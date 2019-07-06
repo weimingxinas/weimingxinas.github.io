@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="vue," />
+  <meta name="keywords" content="docker," />
 
 
 
@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="关于vue中的nextTick机制的降级1234567891011121314151617181920212223242526272829if (typeof setImmediate !== &apos;undefined&apos; &amp;amp;&amp;amp; isNative(setImmediate)) &amp;#123;    timerFunc = () =&amp;gt; &amp;#123;      setImmediate(">
-<meta name="keywords" content="vue">
+<meta name="description" content="最近遇到的项目都是需要手动打包部署的，很烦，学一学doker和jenkins配合nginx来做自动构建和部署    使用yum安装   yum -y install docker-io docker version查看版本 docker image pull hello-world 将image文件拉下来 docker container run hello-world运行该image   列出本">
+<meta name="keywords" content="docker">
 <meta property="og:type" content="article">
-<meta property="og:title" content="nextTick">
-<meta property="og:url" content="http://blog.wmxfe.com/2019/07/06/nextTick/index.html">
+<meta property="og:title" content="docker">
+<meta property="og:url" content="http://blog.wmxfe.com/2019/07/06/docker/index.html">
 <meta property="og:site_name" content="清风明月的博客">
-<meta property="og:description" content="关于vue中的nextTick机制的降级1234567891011121314151617181920212223242526272829if (typeof setImmediate !== &apos;undefined&apos; &amp;amp;&amp;amp; isNative(setImmediate)) &amp;#123;    timerFunc = () =&amp;gt; &amp;#123;      setImmediate(">
+<meta property="og:description" content="最近遇到的项目都是需要手动打包部署的，很烦，学一学doker和jenkins配合nginx来做自动构建和部署    使用yum安装   yum -y install docker-io docker version查看版本 docker image pull hello-world 将image文件拉下来 docker container run hello-world运行该image   列出本">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-07-06T06:18:18.722Z">
+<meta property="og:updated_time" content="2019-07-06T06:24:23.321Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="nextTick">
-<meta name="twitter:description" content="关于vue中的nextTick机制的降级1234567891011121314151617181920212223242526272829if (typeof setImmediate !== &apos;undefined&apos; &amp;amp;&amp;amp; isNative(setImmediate)) &amp;#123;    timerFunc = () =&amp;gt; &amp;#123;      setImmediate(">
+<meta name="twitter:title" content="docker">
+<meta name="twitter:description" content="最近遇到的项目都是需要手动打包部署的，很烦，学一学doker和jenkins配合nginx来做自动构建和部署    使用yum安装   yum -y install docker-io docker version查看版本 docker image pull hello-world 将image文件拉下来 docker container run hello-world运行该image   列出本">
 
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://blog.wmxfe.com/2019/07/06/nextTick/"/>
+  <link rel="canonical" href="http://blog.wmxfe.com/2019/07/06/docker/"/>
 
 
 
 
 
-  <title>nextTick | 清风明月的博客</title>
+  <title>docker | 清风明月的博客</title>
   
 
 
@@ -253,7 +253,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.wmxfe.com/2019/07/06/nextTick/">
+    <link itemprop="mainEntityOfPage" href="http://blog.wmxfe.com/2019/07/06/docker/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="wdd">
@@ -270,7 +270,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">nextTick</h1>
+          <h1 class="post-title" itemprop="name headline">docker</h1>
         
 
         <div class="post-meta">
@@ -282,7 +282,7 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-06T14:02:55+08:00">
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-06T14:24:10+08:00">
                 2019-07-06
               </time>
             
@@ -320,8 +320,61 @@
       
 
       
-        <p>关于vue中的nextTick机制的降级<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (<span class="keyword">typeof</span> setImmediate !== <span class="string">'undefined'</span> &amp;&amp; isNative(setImmediate)) &#123;</div><div class="line">    timerFunc = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">      setImmediate(nextTickHandler)</div><div class="line">    &#125;</div><div class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="keyword">typeof</span> MessageChannel !== <span class="string">'undefined'</span> &amp;&amp; (</div><div class="line">    isNative(MessageChannel) ||</div><div class="line">    <span class="comment">// PhantomJS</span></div><div class="line">    MessageChannel.toString() === <span class="string">'[object MessageChannelConstructor]'</span></div><div class="line">  )) &#123;</div><div class="line">    <span class="keyword">const</span> channel = <span class="keyword">new</span> MessageChannel()</div><div class="line">    <span class="keyword">const</span> port = channel.port2</div><div class="line">    channel.port1.onmessage = nextTickHandler</div><div class="line">    timerFunc = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">      port.postMessage(<span class="number">1</span>)</div><div class="line">    &#125;</div><div class="line">  &#125; <span class="keyword">else</span></div><div class="line">  <span class="comment">/* istanbul ignore next */</span></div><div class="line">  <span class="keyword">if</span> (<span class="keyword">typeof</span> <span class="built_in">Promise</span> !== <span class="string">'undefined'</span> &amp;&amp; isNative(<span class="built_in">Promise</span>)) &#123;</div><div class="line">    <span class="comment">// use microtask in non-DOM environments, e.g. Weex</span></div><div class="line">    <span class="keyword">const</span> p = <span class="built_in">Promise</span>.resolve()</div><div class="line">    timerFunc = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">      p.then(nextTickHandler)</div><div class="line">    &#125;</div><div class="line">  &#125; <span class="keyword">else</span> &#123;</div><div class="line">    <span class="comment">// fallback to setTimeout</span></div><div class="line">    timerFunc = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">      setTimeout(nextTickHandler, <span class="number">0</span>)</div><div class="line">    &#125;</div><div class="line">  &#125;</div></pre></td></tr></table></figure></p>
-<p>优先定义setImmediate、MessageChannel为什么要优先用他们创建macroTask而不是setTimeout？<br>HTML5中规定setTimeout的最小时间延迟是4ms，也就是说理想环境下异步回调最快也是4ms才能触发。Vue使用这么多函数来模拟异步任务，其目的只有一个，就是让回调异步且尽早调用。而MessageChannel 和 setImmediate 的延迟明显是小于setTimeout的</p>
+        <p>最近遇到的项目都是需要手动打包部署的，很烦，学一学doker和jenkins配合nginx来做自动构建和部署  </p>
+<ol>
+<li>使用yum安装   yum -y install docker-io</li>
+<li><strong>docker version</strong>查看版本</li>
+<li><strong>docker image pull hello-world</strong> 将image文件拉下来</li>
+<li><strong>docker container run hello-world</strong>运行该image</li>
+<li><blockquote>
+<ul>
+<li>列出本机正在运行的容器<br>$ <strong>docker container ls</strong>  </li>
+<li>列出本机所有容器，包括终止运行的容器<br>$ <strong>docker container ls –all</strong></li>
+</ul>
+</blockquote>
+</li>
+<li><strong>docker container kill [containID]</strong> 终止该容器</li>
+<li><strong>docker container rm [containerID]</strong> 删除容器文件 </li>
+<li>image 文件生成的容器实例，本身也是一个文件，称为容器文件。也就是说，一旦容器生成，就会同时存在两个文件： image文件和容器文件。而且关闭容器并不会删除容器文件，只是容器停止运行而已。  <h5 id="编写dockerfile文件"><a href="#编写dockerfile文件" class="headerlink" title="编写dockerfile文件"></a>编写dockerfile文件</h5></li>
+<li><p>首先，在项目的根目录下，新建一个文本文件.dockerignore，写入下面的内容  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">.git</div><div class="line">node_modules</div><div class="line">npm-debug.log</div></pre></td></tr></table></figure>
+</li>
+<li><p>在项目的根目录下，新建一个文本文件 Dockerfile，写入下面的内容  </p>
+</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">FROM node:8.4</div><div class="line">COPY . /app</div><div class="line">WORKDIR /app</div><div class="line">RUN npm install --registry=https://registry.npm.taobao.org</div><div class="line">EXPOSE 3000</div></pre></td></tr></table></figure>
+<ul>
+<li><p>FROM node:8.4：该 image 文件继承官方的 node image，冒号表示标签，这里标签是8.4，即8.4版本的 node。</p>
+</li>
+<li><p>COPY . /app：将当前目录下的所有文件（除了.dockerignore排除的路径），都拷贝进入 image 文件的/app目录。</p>
+</li>
+<li><p>WORKDIR /app：指定接下来的工作路径为/app。</p>
+</li>
+<li><p>RUN npm install：在/app目录下，运行npm install命令安装依赖。注意，安装后所有的依赖，都将打包进入 image 文件。</p>
+</li>
+<li><p>EXPOSE 3000：将容器 3000 端口暴露出来， 允许外部连接这个端口。</p>
+<h5 id="有用的命令"><a href="#有用的命令" class="headerlink" title="有用的命令"></a>有用的命令</h5></li>
+</ul>
+<ol>
+<li><strong>docker container start</strong><br>前面的docker container run命令是新建容器，每运行一次，就会新建一个容器。同样的命令运行两次，就会生成两个一模一样的容器文件。如果希望重复使用容器，就要使用docker container start命令，它用来<strong>启动已经生成、已经停止运行的容器文件。</strong></li>
+<li><strong>docker container stop</strong><br>前面的docker container kill命令终止容器运行，相当于向容器里面的主进程发出 SIGKILL 信号。而docker container stop命令也是用来终止容器运行，相当于向容器里面的主进程发出 SIGTERM 信号，然后过一段时间再发出 SIGKILL 信号。<br>这两个信号的差别是，应用程序收到 SIGTERM 信号以后，可以自行进行收尾清理工作，但也可以不理会这个信号。如果收到 SIGKILL 信号，就会强行立即终止，那些正在进行中的操作会全部丢失。</li>
+<li><strong>docker container exec</strong><br>``</li>
+</ol>
+<p>docker container exec命令用于进入一个正在运行的 docker 容器。如果docker run命令运行容器的时候，没有使用-it参数，就要用这个命令进入容器。一旦进入了容器，就可以在容器的 Shell 执行命令了。 </p>
+<ol>
+<li><strong>docker container cp</strong><br>docker container cp命令用于从正在运行的 Docker 容器里面，将文件拷贝到本机。下面是拷贝到当前目录的写法。</li>
+</ol>
+<blockquote>
+<p>$ docker container cp [containID]:[/path/to/file]  .     </p>
+</blockquote>
+<h5 id="run和cmd的区别"><a href="#run和cmd的区别" class="headerlink" title="run和cmd的区别"></a>run和cmd的区别</h5><p>RUN命令在 image 文件的构建阶段执行，执行结果都会打包进入 image 文件；CMD命令则是在容器启动后执行。另外，一个 Dockerfile 可以包含多个RUN命令，但是只能有一个CMD命令</p>
+<h5 id="docker安装jenkins"><a href="#docker安装jenkins" class="headerlink" title="docker安装jenkins"></a>docker安装jenkins</h5><p>百度。。。   </p>
+<ol>
+<li><strong>docker ps</strong><br>查看运行的docker</li>
+<li><strong>docker ps -a</strong><br>查看所有docker，包含挂掉的  </li>
+<li><strong>docker logs [id]</strong><br>查看挂掉的原因（日志）  <h5 id="jenkins和github"><a href="#jenkins和github" class="headerlink" title="jenkins和github"></a>jenkins和github</h5></li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker container run -itd -p 8903:8080 --name jenkins01 --privileged=true  -v /home/wmxDocker/jenkins:/var/jenkins_home jenkins</div></pre></td></tr></table></figure>
 
       
     </div>
@@ -349,7 +402,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/vue/" rel="tag"># vue</a>
+            <a href="/tags/docker/" rel="tag"># docker</a>
           
         </div>
       
@@ -362,8 +415,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/03/26/css和js实现多行溢出显示省略号/" rel="next" title="css和js实现多行溢出显示省略号">
-                <i class="fa fa-chevron-left"></i> css和js实现多行溢出显示省略号
+              <a href="/2019/07/06/HOC相关/" rel="next" title="HOC相关">
+                <i class="fa fa-chevron-left"></i> HOC相关
               </a>
             
           </div>
@@ -372,8 +425,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/07/06/HOC相关/" rel="prev" title="HOC相关">
-                HOC相关 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/07/06/element-radio/" rel="prev" title="element-radio">
+                element-radio <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -426,8 +479,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -493,6 +555,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#编写dockerfile文件"><span class="nav-number">1.</span> <span class="nav-text">编写dockerfile文件</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#有用的命令"><span class="nav-number">2.</span> <span class="nav-text">有用的命令</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#run和cmd的区别"><span class="nav-number">3.</span> <span class="nav-text">run和cmd的区别</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#docker安装jenkins"><span class="nav-number">4.</span> <span class="nav-text">docker安装jenkins</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#jenkins和github"><span class="nav-number">5.</span> <span class="nav-text">jenkins和github</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       

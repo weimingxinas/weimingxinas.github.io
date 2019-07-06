@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="vue," />
+  <meta name="keywords" content="vue components," />
 
 
 
@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="关于vue中的nextTick机制的降级1234567891011121314151617181920212223242526272829if (typeof setImmediate !== &apos;undefined&apos; &amp;amp;&amp;amp; isNative(setImmediate)) &amp;#123;    timerFunc = () =&amp;gt; &amp;#123;      setImmediate(">
-<meta name="keywords" content="vue">
+<meta name="description" content="1. 布局修改前后置元素内容可以发现，中间input的宽度是自适应的采用table-cell布局，table内表格宽度都是自适应的，某一列很宽的话，另外的列就会变窄 2. 善用v-bind=”$attrs”3. compositionstart123@compositionstart=&quot;handleComposition&quot;@compositionupdate=&quot;handleComposition&quot;">
+<meta name="keywords" content="vue components">
 <meta property="og:type" content="article">
-<meta property="og:title" content="nextTick">
-<meta property="og:url" content="http://blog.wmxfe.com/2019/07/06/nextTick/index.html">
+<meta property="og:title" content="element-input">
+<meta property="og:url" content="http://blog.wmxfe.com/2019/07/06/element-input组件/index.html">
 <meta property="og:site_name" content="清风明月的博客">
-<meta property="og:description" content="关于vue中的nextTick机制的降级1234567891011121314151617181920212223242526272829if (typeof setImmediate !== &apos;undefined&apos; &amp;amp;&amp;amp; isNative(setImmediate)) &amp;#123;    timerFunc = () =&amp;gt; &amp;#123;      setImmediate(">
+<meta property="og:description" content="1. 布局修改前后置元素内容可以发现，中间input的宽度是自适应的采用table-cell布局，table内表格宽度都是自适应的，某一列很宽的话，另外的列就会变窄 2. 善用v-bind=”$attrs”3. compositionstart123@compositionstart=&quot;handleComposition&quot;@compositionupdate=&quot;handleComposition&quot;">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-07-06T06:18:18.722Z">
+<meta property="og:updated_time" content="2019-07-06T06:29:37.045Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="nextTick">
-<meta name="twitter:description" content="关于vue中的nextTick机制的降级1234567891011121314151617181920212223242526272829if (typeof setImmediate !== &apos;undefined&apos; &amp;amp;&amp;amp; isNative(setImmediate)) &amp;#123;    timerFunc = () =&amp;gt; &amp;#123;      setImmediate(">
+<meta name="twitter:title" content="element-input">
+<meta name="twitter:description" content="1. 布局修改前后置元素内容可以发现，中间input的宽度是自适应的采用table-cell布局，table内表格宽度都是自适应的，某一列很宽的话，另外的列就会变窄 2. 善用v-bind=”$attrs”3. compositionstart123@compositionstart=&quot;handleComposition&quot;@compositionupdate=&quot;handleComposition&quot;">
 
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://blog.wmxfe.com/2019/07/06/nextTick/"/>
+  <link rel="canonical" href="http://blog.wmxfe.com/2019/07/06/element-input组件/"/>
 
 
 
 
 
-  <title>nextTick | 清风明月的博客</title>
+  <title>element-input | 清风明月的博客</title>
   
 
 
@@ -253,7 +253,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.wmxfe.com/2019/07/06/nextTick/">
+    <link itemprop="mainEntityOfPage" href="http://blog.wmxfe.com/2019/07/06/element-input组件/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="wdd">
@@ -270,7 +270,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">nextTick</h1>
+          <h1 class="post-title" itemprop="name headline">element-input</h1>
         
 
         <div class="post-meta">
@@ -282,7 +282,7 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-06T14:02:55+08:00">
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-06T14:26:36+08:00">
                 2019-07-06
               </time>
             
@@ -320,8 +320,35 @@
       
 
       
-        <p>关于vue中的nextTick机制的降级<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (<span class="keyword">typeof</span> setImmediate !== <span class="string">'undefined'</span> &amp;&amp; isNative(setImmediate)) &#123;</div><div class="line">    timerFunc = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">      setImmediate(nextTickHandler)</div><div class="line">    &#125;</div><div class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="keyword">typeof</span> MessageChannel !== <span class="string">'undefined'</span> &amp;&amp; (</div><div class="line">    isNative(MessageChannel) ||</div><div class="line">    <span class="comment">// PhantomJS</span></div><div class="line">    MessageChannel.toString() === <span class="string">'[object MessageChannelConstructor]'</span></div><div class="line">  )) &#123;</div><div class="line">    <span class="keyword">const</span> channel = <span class="keyword">new</span> MessageChannel()</div><div class="line">    <span class="keyword">const</span> port = channel.port2</div><div class="line">    channel.port1.onmessage = nextTickHandler</div><div class="line">    timerFunc = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">      port.postMessage(<span class="number">1</span>)</div><div class="line">    &#125;</div><div class="line">  &#125; <span class="keyword">else</span></div><div class="line">  <span class="comment">/* istanbul ignore next */</span></div><div class="line">  <span class="keyword">if</span> (<span class="keyword">typeof</span> <span class="built_in">Promise</span> !== <span class="string">'undefined'</span> &amp;&amp; isNative(<span class="built_in">Promise</span>)) &#123;</div><div class="line">    <span class="comment">// use microtask in non-DOM environments, e.g. Weex</span></div><div class="line">    <span class="keyword">const</span> p = <span class="built_in">Promise</span>.resolve()</div><div class="line">    timerFunc = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">      p.then(nextTickHandler)</div><div class="line">    &#125;</div><div class="line">  &#125; <span class="keyword">else</span> &#123;</div><div class="line">    <span class="comment">// fallback to setTimeout</span></div><div class="line">    timerFunc = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">      setTimeout(nextTickHandler, <span class="number">0</span>)</div><div class="line">    &#125;</div><div class="line">  &#125;</div></pre></td></tr></table></figure></p>
-<p>优先定义setImmediate、MessageChannel为什么要优先用他们创建macroTask而不是setTimeout？<br>HTML5中规定setTimeout的最小时间延迟是4ms，也就是说理想环境下异步回调最快也是4ms才能触发。Vue使用这么多函数来模拟异步任务，其目的只有一个，就是让回调异步且尽早调用。而MessageChannel 和 setImmediate 的延迟明显是小于setTimeout的</p>
+        <h5 id="1-布局"><a href="#1-布局" class="headerlink" title="1. 布局"></a>1. 布局</h5><p>修改前后置元素内容可以发现，中间input的宽度是自适应的<br>采用table-cell布局，table内表格宽度都是自适应的，某一列很宽的话，另外的列就会变窄</p>
+<h5 id="2-善用v-bind-”-attrs”"><a href="#2-善用v-bind-”-attrs”" class="headerlink" title="2. 善用v-bind=”$attrs”"></a>2. 善用v-bind=”$attrs”</h5><h5 id="3-compositionstart"><a href="#3-compositionstart" class="headerlink" title="3. compositionstart"></a>3. compositionstart</h5><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">@compositionstart=<span class="string">"handleComposition"</span></div><div class="line">@compositionupdate=<span class="string">"handleComposition"</span></div><div class="line">@compositionend=<span class="string">"handleComposition"</span></div></pre></td></tr></table></figure>
+<p>compositionstart 事件触发于一段文字的输入之前（类似于 keydown 事件，但是该事件仅在若干可见字符的输入之前，而这些可见字符的输入可能需要一连串的键盘操作、语音识别或者点击输入法的备选词）<br>简单来说就是切换中文输入法时在打拼音时(此时input内还没有填入真正的内容)，会首先触发compositionstart，然后每打一个拼音字母，触发compositionupdate，最后将输入好的中文填入input中时触发compositionend。触发compositionstart时，文本框会填入 “虚拟文本”（待确认文本），同时触发input事件；在触发compositionend时，就是填入实际内容后（已确认文本）</p>
+<h5 id="4-textarea-的自动计算"><a href="#4-textarea-的自动计算" class="headerlink" title="4. textarea 的自动计算"></a>4. textarea 的自动计算</h5><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (!hiddenTextarea) &#123;</div><div class="line">  hiddenTextarea = <span class="built_in">document</span>.createElement(<span class="string">'textarea'</span>);</div><div class="line">  <span class="built_in">document</span>.body.appendChild(hiddenTextarea);</div><div class="line">&#125;</div><div class="line"></div><div class="line">hiddenTextarea.setAttribute(<span class="string">'style'</span>, <span class="string">`<span class="subst">$&#123;contextStyle&#125;</span>;<span class="subst">$&#123;HIDDEN_STYLE&#125;</span>`</span>);</div><div class="line">hiddenTextarea.value = targetElement.value || targetElement.placeholder || <span class="string">''</span>;</div></pre></td></tr></table></figure>
+<p>非常的简单明了，思路如下</p>
+<ol>
+<li>创建textarea元素，并设置为不可见<br>设置隐藏的代码如下：</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> HIDDEN_STYLE = <span class="string">`</span></div><div class="line"><span class="string">  height:0 !important;</span></div><div class="line"><span class="string">  visibility:hidden !important;</span></div><div class="line"><span class="string">  overflow:hidden !important;</span></div><div class="line"><span class="string">  position:absolute !important;</span></div><div class="line"><span class="string">  z-index:-1000 !important;</span></div><div class="line"><span class="string">  top:0 !important;</span></div><div class="line"><span class="string">  right:0 !important</span></div><div class="line"><span class="string">`</span>;</div></pre></td></tr></table></figure>
+<ol>
+<li><p>将textarea的值设置为输入的值，并获取scrollHeight；并确定是哪一种盒模型，计算出最终高度；</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> height = hiddenTextarea.scrollHeight;</div><div class="line"><span class="keyword">if</span> (boxSizing === <span class="string">'border-box'</span>) &#123;</div><div class="line">  height = height + borderSize;</div><div class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (boxSizing === <span class="string">'content-box'</span>) &#123;</div><div class="line">  height = height - paddingSize;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>如果有设置minRows或者maxRows则与height比较</p>
+</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"> hiddenTextarea.value = <span class="string">''</span>;</div><div class="line"><span class="keyword">let</span> singleRowHeight = hiddenTextarea.scrollHeight - paddingSize;</div></pre></td></tr></table></figure>
+<p>这里的代码是取得单行的高度（注意，要减去paddingSize）</p>
+<ol>
+<li>minheight的设置  </li>
+</ol>
+<ul>
+<li>elemet： calcTextareaHeight(minRows = 1)<br>设置了默认值为1，minheight = singleRowHeight * minRows;</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> minHeight = singleRowHeight * minRows;</div><div class="line"><span class="keyword">if</span> (boxSizing === <span class="string">'border-box'</span>) &#123;</div><div class="line">  minHeight = minHeight + paddingSize + borderSize;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>gs</li>
+</ul>
+<p>props中minHeight的传值默认为80<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"> <span class="keyword">if</span> (<span class="keyword">this</span>.minHeight) &#123;</div><div class="line">  opt.minHeight = <span class="keyword">typeof</span> <span class="keyword">this</span>.minHeight === <span class="string">'number'</span> ? <span class="string">`<span class="subst">$&#123;<span class="keyword">this</span>.minHeight&#125;</span>px`</span> : <span class="keyword">this</span>.minHeight;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 
       
     </div>
@@ -349,7 +376,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/vue/" rel="tag"># vue</a>
+            <a href="/tags/vue-components/" rel="tag"># vue components</a>
           
         </div>
       
@@ -362,8 +389,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/03/26/css和js实现多行溢出显示省略号/" rel="next" title="css和js实现多行溢出显示省略号">
-                <i class="fa fa-chevron-left"></i> css和js实现多行溢出显示省略号
+              <a href="/2019/07/06/element-radio/" rel="next" title="element-radio">
+                <i class="fa fa-chevron-left"></i> element-radio
               </a>
             
           </div>
@@ -372,8 +399,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/07/06/HOC相关/" rel="prev" title="HOC相关">
-                HOC相关 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/07/06/http缓存详解/" rel="prev" title="http缓存详解">
+                http缓存详解 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -426,8 +453,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -493,6 +529,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-布局"><span class="nav-number">1.</span> <span class="nav-text">1. 布局</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-善用v-bind-”-attrs”"><span class="nav-number">2.</span> <span class="nav-text">2. 善用v-bind=”$attrs”</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-compositionstart"><span class="nav-number">3.</span> <span class="nav-text">3. compositionstart</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-textarea-的自动计算"><span class="nav-number">4.</span> <span class="nav-text">4. textarea 的自动计算</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
